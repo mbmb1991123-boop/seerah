@@ -1,0 +1,540 @@
+<title>سيرة</title>
+<style>
+:root{
+  --ink:#17332C;
+  --ink-soft:#2A4A42;
+  --parchment:#F6EFE1;
+  --parchment-2:#EEE3CC;
+  --gold:#B8863B;
+  --gold-soft:#D9B87A;
+  --teal:#2F5D55;
+  --burgundy:#7A3B3B;
+  --line:#DCCDA8;
+  --text:#22302B;
+  --text-soft:#5B6B62;
+  --card:#FFFDF8;
+  --shadow:0 2px 10px rgba(23,51,44,.08);
+  --danger:#9C4A3B;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ink:#EFE6CE;
+    --ink-soft:#D9B87A;
+    --parchment:#12201B;
+    --parchment-2:#182B24;
+    --gold:#D9B87A;
+    --gold-soft:#B8863B;
+    --teal:#8FBBAF;
+    --burgundy:#D08C7D;
+    --line:#2C4038;
+    --text:#EAE3D2;
+    --text-soft:#A8B8AE;
+    --card:#182922;
+    --shadow:0 2px 14px rgba(0,0,0,.35);
+    --danger:#E29587;
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#EFE6CE;
+  --ink-soft:#D9B87A;
+  --parchment:#12201B;
+  --parchment-2:#182B24;
+  --gold:#D9B87A;
+  --gold-soft:#B8863B;
+  --teal:#8FBBAF;
+  --burgundy:#D08C7D;
+  --line:#2C4038;
+  --text:#EAE3D2;
+  --text-soft:#A8B8AE;
+  --card:#182922;
+  --shadow:0 2px 14px rgba(0,0,0,.35);
+  --danger:#E29587;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--parchment);color:var(--text);font-family:'Cairo',system-ui,sans-serif;direction:rtl}
+h1,h2,h3,.display{font-family:'Amiri',serif}
+h1,h2,h3{text-wrap:balance}
+::selection{background:var(--gold-soft);color:var(--ink)}
+a{color:inherit}
+button{font-family:inherit;cursor:pointer}
+textarea,input,select{font-family:inherit}
+
+/* ---- shell ---- */
+.shell{display:flex;min-height:100vh}
+.nav{
+  width:220px;flex:0 0 220px;background:var(--ink);color:var(--parchment);
+  padding:28px 18px;display:flex;flex-direction:column;gap:6px;position:sticky;top:0;height:100vh;
+}
+.brand{font-family:'Amiri',serif;font-size:1.7rem;color:var(--gold-soft);margin:0 0 4px;text-align:center}
+.brand-sub{font-size:.72rem;color:var(--parchment-2);opacity:.65;text-align:center;margin-bottom:26px;letter-spacing:.04em}
+.navbtn{
+  display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;border:none;
+  background:transparent;color:inherit;font-size:.95rem;text-align:right;transition:background .15s;
+}
+.navbtn:hover{background:rgba(255,255,255,.06)}
+.navbtn.active{background:rgba(217,184,122,.16);color:var(--gold-soft);font-weight:700}
+.navbtn .ic{font-size:1.1rem;width:22px;text-align:center}
+.nav-foot{margin-top:auto;font-size:.68rem;color:var(--parchment-2);opacity:.5;text-align:center;line-height:1.6}
+
+.main{flex:1;min-width:0;padding:34px 40px 80px;max-width:980px}
+.page-head{margin-bottom:28px}
+.eyebrow{font-size:.72rem;letter-spacing:.08em;color:var(--gold);font-weight:700;text-transform:uppercase}
+.page-head h1{font-size:2.1rem;margin:.2em 0 .1em;color:var(--ink)}
+.page-head p{color:var(--text-soft);margin:0;max-width:60ch;line-height:1.7}
+
+/* ---- generic card / form ---- */
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:20px 22px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-grid.wide,.field.full{grid-column:1/-1}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:.78rem;color:var(--text-soft);font-weight:700}
+.field input,.field select,.field textarea{
+  padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--parchment);color:var(--text);
+  font-size:.92rem;resize:vertical;
+}
+.field textarea{min-height:70px;line-height:1.6}
+.field input:focus,.field select:focus,.field textarea:focus{outline:2px solid var(--gold);outline-offset:1px}
+.btn{
+  padding:9px 18px;border-radius:8px;border:1px solid var(--gold);background:var(--gold);color:var(--ink);
+  font-weight:700;font-size:.88rem;transition:transform .1s,filter .15s;
+}
+.btn:hover{filter:brightness(1.06)}
+.btn:active{transform:translateY(1px)}
+.btn.ghost{background:transparent;color:var(--teal);border-color:var(--line)}
+.btn.danger{background:transparent;color:var(--danger);border-color:var(--danger)}
+.btn:focus-visible,.navbtn:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.actions{display:flex;gap:8px;margin-top:14px;justify-content:flex-start}
+.section-title{font-size:1.05rem;color:var(--teal);margin:36px 0 14px;display:flex;align-items:center;gap:10px}
+.section-title::after{content:"";flex:1;height:1px;background:var(--line)}
+
+/* ---- timeline page ---- */
+.era{margin-bottom:34px}
+.era-head{display:flex;align-items:baseline;gap:12px;margin-bottom:14px}
+.era-head h2{font-size:1.3rem;color:var(--ink);margin:0}
+.era-count{font-size:.75rem;color:var(--text-soft)}
+.spine{position:relative;padding-inline-start:26px;border-inline-start:2px solid var(--line)}
+.node{position:relative;margin-bottom:16px}
+.node::before{content:"";position:absolute;right:-33px;top:6px;width:10px;height:10px;border-radius:50%;background:var(--gold);border:2px solid var(--parchment)}
+.node .yr{font-size:.72rem;color:var(--gold);font-weight:700;letter-spacing:.03em}
+.entry{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin-top:6px;box-shadow:var(--shadow)}
+.entry h4{margin:0 0 4px;font-size:1rem;color:var(--ink)}
+.entry p{margin:0;color:var(--text-soft);line-height:1.7;font-size:.9rem;white-space:pre-wrap}
+.entry .row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.icon-btn{background:none;border:none;color:var(--text-soft);font-size:.85rem;padding:2px 4px;border-radius:6px}
+.icon-btn:hover{color:var(--danger)}
+.empty-note{color:var(--text-soft);font-size:.85rem;padding:10px 4px;font-style:italic}
+.year-picker{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
+.year-chip{padding:5px 11px;border-radius:20px;border:1px solid var(--line);background:var(--parchment);font-size:.8rem;color:var(--text-soft)}
+.year-chip.sel{background:var(--teal);color:#fff;border-color:var(--teal)}
+
+/* ---- characters ---- */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.pcard{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:8px}
+.pcard h3{margin:0;font-size:1.15rem;color:var(--ink)}
+.tribe{display:inline-block;font-size:.72rem;color:var(--teal);background:rgba(47,93,85,.1);padding:2px 10px;border-radius:20px;width:fit-content}
+.pcard .blk{font-size:.85rem;color:var(--text-soft);line-height:1.65}
+.pcard .blk b{color:var(--text);font-size:.78rem;display:block;margin-bottom:2px}
+.pcard .foot{margin-top:auto;display:flex;gap:8px}
+
+/* ---- verses ---- */
+.vcard{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:var(--shadow);margin-bottom:14px}
+.ayah{font-family:'Amiri',serif;font-size:1.35rem;line-height:2.1;color:var(--ink);text-align:center;padding:6px 10px 14px;border-bottom:1px dashed var(--line);margin-bottom:10px}
+.vmeta{display:flex;flex-wrap:wrap;gap:8px;font-size:.78rem;color:var(--text-soft);margin-bottom:8px}
+.tag{background:var(--parchment-2);padding:3px 10px;border-radius:20px}
+.tag.gold{color:var(--ink);background:var(--gold-soft)}
+.vnote{font-size:.88rem;color:var(--text-soft);line-height:1.7}
+.vfoot{display:flex;justify-content:flex-end;gap:8px;margin-top:10px}
+
+/* ---- reflections ---- */
+.rcard{background:var(--card);border-inline-start:4px solid var(--teal);border-radius:10px;padding:16px 18px;box-shadow:var(--shadow);margin-bottom:14px}
+.rcard.aqidah{border-inline-start-color:var(--burgundy)}
+.rcard h3{margin:0 0 4px;font-size:1.05rem;color:var(--ink)}
+.rmeta{font-size:.72rem;color:var(--text-soft);margin-bottom:8px;display:flex;gap:10px}
+.rcard p{margin:0;line-height:1.8;color:var(--text);white-space:pre-wrap;font-size:.92rem}
+
+.toast{position:fixed;bottom:24px;left:24px;background:var(--ink);color:var(--parchment);padding:10px 18px;border-radius:10px;font-size:.85rem;box-shadow:var(--shadow);opacity:0;transform:translateY(10px);transition:.25s;pointer-events:none;z-index:50}
+.toast.show{opacity:1;transform:translateY(0)}
+[hidden]{display:none!important}
+
+@media (max-width:760px){
+  body{-webkit-tap-highlight-color:transparent}
+  .shell{flex-direction:column}
+  .nav{
+    width:100%;flex-direction:row;height:auto;position:fixed;bottom:0;right:0;left:0;top:auto;z-index:40;
+    padding:6px 4px calc(6px + env(safe-area-inset-bottom));gap:2px;justify-content:space-around;
+    box-shadow:0 -2px 14px rgba(0,0,0,.18);
+  }
+  .brand,.brand-sub,.nav-foot{display:none}
+  .navbtn{flex:1 1 0;flex-direction:column;gap:3px;padding:8px 4px;font-size:.68rem;border-radius:10px;white-space:nowrap}
+  .navbtn .ic{font-size:1.25rem}
+  .main{padding:18px 14px calc(84px + env(safe-area-inset-bottom))}
+  .page-head h1{font-size:1.55rem}
+  .page-head p{font-size:.9rem}
+  .card{padding:16px}
+  .form-grid{grid-template-columns:1fr}
+  .actions .btn,.actions{width:100%}
+  .actions .btn{width:100%;padding:12px 18px}
+  .grid{grid-template-columns:1fr}
+  .ayah{font-size:1.1rem;line-height:1.9}
+  .spine{padding-inline-start:20px}
+  .node::before{right:-27px}
+  .entry{padding:10px 12px}
+  .field input,.field select,.field textarea{font-size:16px} /* avoid iOS zoom-on-focus */
+  .toast{left:16px;right:16px;bottom:calc(76px + env(safe-area-inset-bottom));text-align:center}
+  .year-picker{overflow-x:auto;flex-wrap:nowrap;padding-bottom:2px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;600;700&display=swap">
+
+<div class="shell">
+  <nav class="nav">
+    <div class="brand">سِيرة</div>
+    <div class="brand-sub">فهم سيرة النبي ﷺ</div>
+    <button class="navbtn active" data-page="timeline"><span class="ic">📜</span> التواريخ</button>
+    <button class="navbtn" data-page="people"><span class="ic">👥</span> الشخصيات</button>
+    <button class="navbtn" data-page="verses"><span class="ic">📖</span> الآيات</button>
+    <button class="navbtn" data-page="reflect"><span class="ic">🕊️</span> تأملاتي</button>
+    <div class="nav-foot">حفظك محفوظ تلقائيًا<br>عند كل إضافة</div>
+  </nav>
+
+  <main class="main">
+
+    <!-- ===================== TIMELINE ===================== -->
+    <section id="page-timeline" class="page">
+      <div class="page-head">
+        <div class="eyebrow">خط الزمن</div>
+        <h1>تواريخ السيرة</h1>
+        <p>أربع مراحل تغطي حياة النبي ﷺ، من قبل مولده إلى وفاته، مع تقسيم عامي البعثة والهجرة إلى سنواتهما.</p>
+      </div>
+      <div id="eras"></div>
+    </section>
+
+    <!-- ===================== PEOPLE ===================== -->
+    <section id="page-people" class="page" hidden>
+      <div class="page-head">
+        <div class="eyebrow">الشخصيات</div>
+        <h1>من عاصروا السيرة</h1>
+        <p>سجّل الأسماء، قبائلهم، ما قيل فيهم، وما فعلوه من مواقف.</p>
+      </div>
+      <div class="card">
+        <div class="form-grid">
+          <div class="field"><label>الاسم</label><input id="p-name" placeholder="مثال: خديجة بنت خويلد"></div>
+          <div class="field"><label>القبيلة</label><input id="p-tribe" placeholder="مثال: قريش (بنو أسد)"></div>
+          <div class="field full"><label>أقوال قيلت في حقه/ها</label><textarea id="p-sayings" placeholder="كل قول في سطر مستقل"></textarea></div>
+          <div class="field full"><label>مواقف وأفعال</label><textarea id="p-deeds" placeholder="كل حدث/موقف في سطر مستقل"></textarea></div>
+        </div>
+        <div class="actions"><button class="btn" id="p-add">إضافة الشخصية</button></div>
+      </div>
+      <div class="section-title">السجلّ</div>
+      <div id="people-grid" class="grid"></div>
+    </section>
+
+    <!-- ===================== VERSES ===================== -->
+    <section id="page-verses" class="page" hidden>
+      <div class="page-head">
+        <div class="eyebrow">القرآن الكريم</div>
+        <h1>الآيات المرتبطة بالسيرة</h1>
+        <p>اربط الآية بحدثٍ أو شخصية وسنة نزولها.</p>
+      </div>
+      <div class="card">
+        <div class="form-grid">
+          <div class="field full"><label>نص الآية</label><textarea id="v-text" placeholder="﴿ ... ﴾"></textarea></div>
+          <div class="field"><label>السورة والآية</label><input id="v-ref" placeholder="مثال: العلق: 1-5"></div>
+          <div class="field"><label>سنة النزول (تقريبية)</label><input id="v-year" placeholder="مثال: السنة 1 من البعثة"></div>
+          <div class="field full"><label>الحدث أو الشخصية المرتبطة</label><input id="v-related" placeholder="مثال: بدء الوحي في غار حراء"></div>
+          <div class="field full"><label>ملاحظة</label><textarea id="v-note" placeholder="سبب النزول أو ملاحظتك"></textarea></div>
+        </div>
+        <div class="actions"><button class="btn" id="v-add">إضافة الآية</button></div>
+      </div>
+      <div class="section-title">السجلّ</div>
+      <div id="verses-list"></div>
+    </section>
+
+    <!-- ===================== REFLECTIONS ===================== -->
+    <section id="page-reflect" class="page" hidden>
+      <div class="page-head">
+        <div class="eyebrow">خاص بي</div>
+        <h1>تأملاتي واستنتاجاتي</h1>
+        <p>مساحتك الخاصة للمواضيع الأخلاقية والعقائدية وما تستخلصه من الأحداث.</p>
+      </div>
+      <div class="card">
+        <div class="form-grid">
+          <div class="field"><label>العنوان</label><input id="r-title" placeholder="مثال: الصبر عند الأذى"></div>
+          <div class="field">
+            <label>التصنيف</label>
+            <select id="r-cat"><option value="اخلاقي">أخلاقي</option><option value="عقائدي">عقائدي</option></select>
+          </div>
+          <div class="field full"><label>استنتاجك</label><textarea id="r-content" style="min-height:110px" placeholder="اكتب ملاحظتك أو استنتاجك هنا..."></textarea></div>
+        </div>
+        <div class="actions"><button class="btn" id="r-add">حفظ التأمل</button></div>
+      </div>
+      <div class="section-title">السجلّ</div>
+      <div id="reflect-list"></div>
+    </section>
+
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---------------- state ---------------- */
+const ERAS = [
+  {id:'before',        title:'قبل ولادة النبي ﷺ',                    hasYears:false},
+  {id:'birth2mission',  title:'من ولادة النبي ﷺ إلى البعثة',          hasYears:false},
+  {id:'mission2hijra', title:'من البعثة الشريفة إلى الهجرة',          hasYears:true, count:13},
+  {id:'hijra2wafat',   title:'من الهجرة إلى وفاته ﷺ',                 hasYears:true, count:10},
+];
+
+let STATE = window.__SEERAH_STATE__ || {
+  entries: [
+    {id:'e1', era:'before', year:null, title:'عام الفيل', desc:'ولد النبي ﷺ في العام الذي قصد فيه أبرهة الأشرم بجيشه ومعه الفيل هدم الكعبة، فردّه الله بطير أبابيل.'},
+    {id:'e2', era:'birth2mission', year:null, title:'ولادته ﷺ', desc:'وُلد صلى الله عليه وسلم يوم الاثنين 12 ربيع الأول عام الفيل تقريبًا، يتيم الأب؛ إذ توفي والده عبدالله قبل ولادته.'},
+    {id:'e3', era:'birth2mission', year:null, title:'وفاة أمه ثم كفالة جدّه وعمّه', desc:'توفيت أمه آمنة بنت وهب وهو ابن ست سنين، فكفله جده عبدالمطلب، ثم توفي الجد فكفله عمه أبو طالب.'},
+    {id:'e4', era:'birth2mission', year:null, title:'زواجه من خديجة رضي الله عنها', desc:'تزوج النبي ﷺ خديجة بنت خويلد وعمره خمس وعشرون سنة، وكانت أول من آمن به.'},
+    {id:'e5', era:'birth2mission', year:null, title:'تحكيمه في وضع الحجر الأسود', desc:'عند إعادة بناء الكعبة، احتكمت قريش إليه في وضع الحجر الأسود وهو ابن خمس وثلاثين سنة، فوضعه بحكمته على رداء حمله زعماء القبائل معًا.'},
+    {id:'e6', era:'mission2hijra', year:1, title:'بدء الوحي', desc:'نزل عليه جبريل عليه السلام في غار حراء بأول آيات سورة العلق: ﴿اقرأ باسم ربك الذي خلق﴾.'},
+    {id:'e7', era:'mission2hijra', year:13, title:'الهجرة إلى المدينة', desc:'هاجر النبي ﷺ من مكة إلى المدينة المنورة بعد ثلاث عشرة سنة من البعثة.'},
+    {id:'e8', era:'hijra2wafat', year:1, title:'بناء المسجد النبوي والمؤاخاة', desc:'بنى المسجد النبوي، وآخى بين المهاجرين والأنصار، وكتب وثيقة المدينة.'},
+    {id:'e9', era:'hijra2wafat', year:2, title:'غزوة بدر الكبرى', desc:'أول معركة فاصلة بين المسلمين وقريش، انتصر فيها المسلمون رغم قلة عددهم.'},
+    {id:'e10', era:'hijra2wafat', year:6, title:'صلح الحديبية', desc:'هدنة بين المسلمين وقريش مهّدت لانتشار الإسلام ودخول كثير من القبائل فيه.'},
+    {id:'e11', era:'hijra2wafat', year:8, title:'فتح مكة', desc:'دخل النبي ﷺ مكة فاتحًا دون قتال يُذكر، وعفا عن أهلها.'},
+    {id:'e12', era:'hijra2wafat', year:10, title:'حجة الوداع ثم وفاته ﷺ', desc:'حجّ النبي ﷺ حجته الوحيدة وخطب خطبته المشهورة، وتوفي بعدها بأشهر في المدينة المنورة.'},
+  ],
+  people: [
+    {id:'p1', name:'خديجة بنت خويلد', tribe:'قريش (بنو أسد)', sayings:'كلا والله ما يخزيك الله أبدًا، إنك لتصل الرحم وتحمل الكل وتكسب المعدوم', deeds:'أول من آمن بالنبي ﷺ، وثبّتته عند نزول الوحي، وأنفقت مالها في نصرة الدعوة.'},
+  ],
+  verses: [
+    {id:'v1', text:'اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ', ref:'العلق: 1', year:'السنة 1 من البعثة', related:'بدء الوحي في غار حراء', note:'أول ما نزل من القرآن الكريم.'},
+  ],
+  reflections: [],
+};
+
+function uid(){return 'x'+Math.random().toString(36).slice(2,9)}
+function esc(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function nl2br(s){return esc(s).replace(/\n/g,'<br>')}
+
+/* ---------------- persistence ---------------- */
+let artifactApi = null;
+async function initArtifact(){
+  try{
+    if(window.claude && window.claude.use){
+      artifactApi = await window.claude.use('artifact');
+    }
+  }catch(e){ artifactApi = null; }
+}
+initArtifact();
+
+function buildFullHtml(){
+  const doc = document.documentElement.cloneNode(true);
+  const marker = 'window.__SEERAH_STATE__ = ' + JSON.stringify(STATE) + ';';
+  const script = doc.querySelector('script[data-state-injector]');
+  if(script) script.textContent = marker;
+  return '<!doctype html>\n' + doc.outerHTML;
+}
+
+let saveTimer = null;
+function persist(){
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(async ()=>{
+    if(artifactApi && artifactApi.publish){
+      try{ await artifactApi.publish(buildFullHtml()); }catch(e){ /* conflict or not_granted: ignore */ }
+    }
+    toast('تم الحفظ');
+  }, 150);
+}
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._h);
+  t._h = setTimeout(()=>t.classList.remove('show'), 1600);
+}
+
+/* ---------------- nav ---------------- */
+document.querySelectorAll('.navbtn').forEach(b=>{
+  b.addEventListener('click', ()=>{
+    document.querySelectorAll('.navbtn').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(x=>x.hidden = true);
+    b.classList.add('active');
+    document.getElementById('page-'+b.dataset.page).hidden = false;
+  });
+});
+
+/* ---------------- timeline render ---------------- */
+function renderTimeline(){
+  const root = document.getElementById('eras');
+  root.innerHTML = '';
+  ERAS.forEach(era=>{
+    const items = STATE.entries.filter(e=>e.era===era.id);
+    const wrap = document.createElement('div');
+    wrap.className = 'era';
+    let inner = `<div class="era-head"><h2>${esc(era.title)}</h2><span class="era-count">${items.length} حدثًا</span></div>`;
+
+    if(era.hasYears){
+      inner += `<div class="card" style="margin-bottom:14px">
+        <div class="form-grid">
+          <div class="field"><label>السنة (1 – ${era.count})</label>
+            <select data-year-select="${era.id}">${Array.from({length:era.count},(_,i)=>i+1).map(n=>`<option value="${n}">السنة ${n}</option>`).join('')}</select>
+          </div>
+          <div class="field"><label>عنوان الحدث</label><input data-title="${era.id}" placeholder="مثال: غزوة بدر"></div>
+          <div class="field full"><label>الوصف</label><textarea data-desc="${era.id}" placeholder="تفاصيل الحدث..."></textarea></div>
+        </div>
+        <div class="actions"><button class="btn" data-add-era="${era.id}">إضافة إلى ${esc(era.title)}</button></div>
+      </div>`;
+      inner += '<div class="spine">';
+      for(let y=1;y<=era.count;y++){
+        const yearItems = items.filter(e=>e.year===y);
+        inner += `<div class="node"><div class="yr">السنة ${y}</div>`;
+        if(yearItems.length===0){ inner += `<div class="empty-note">لا أحداث مسجّلة</div>`; }
+        yearItems.forEach(it=>{ inner += entryHtml(it); });
+        inner += `</div>`;
+      }
+      inner += '</div>';
+    } else {
+      inner += `<div class="card" style="margin-bottom:14px">
+        <div class="form-grid">
+          <div class="field"><label>عنوان الحدث</label><input data-title="${era.id}" placeholder="مثال: زواجه من خديجة"></div>
+          <div class="field full"><label>الوصف</label><textarea data-desc="${era.id}" placeholder="تفاصيل الحدث..."></textarea></div>
+        </div>
+        <div class="actions"><button class="btn" data-add-era="${era.id}">إضافة إلى ${esc(era.title)}</button></div>
+      </div>`;
+      if(items.length===0){
+        inner += `<div class="empty-note">لا أحداث مسجّلة بعد</div>`;
+      } else {
+        inner += '<div class="spine">' + items.map(entryHtml).join('') + '</div>';
+      }
+    }
+    wrap.innerHTML = inner;
+    root.appendChild(wrap);
+  });
+
+  root.querySelectorAll('[data-add-era]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const eraId = btn.dataset.addEra;
+      const title = root.querySelector(`[data-title="${eraId}"]`).value.trim();
+      const desc = root.querySelector(`[data-desc="${eraId}"]`).value.trim();
+      if(!title){ toast('أدخل عنوان الحدث'); return; }
+      const yearSel = root.querySelector(`[data-year-select="${eraId}"]`);
+      STATE.entries.push({id:uid(), era:eraId, year: yearSel? Number(yearSel.value): null, title, desc});
+      persist(); renderTimeline();
+    });
+  });
+  root.querySelectorAll('[data-del-entry]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      STATE.entries = STATE.entries.filter(e=>e.id!==btn.dataset.delEntry);
+      persist(); renderTimeline();
+    });
+  });
+}
+function entryHtml(it){
+  return `<div class="entry"><div class="row">
+    <div><h4>${esc(it.title)}</h4><p>${nl2br(it.desc)}</p></div>
+    <button class="icon-btn" data-del-entry="${it.id}" title="حذف">✕</button>
+  </div></div>`;
+}
+
+/* ---------------- people ---------------- */
+function renderPeople(){
+  const root = document.getElementById('people-grid');
+  if(STATE.people.length===0){ root.innerHTML = '<div class="empty-note">لم تُضف شخصيات بعد</div>'; return; }
+  root.innerHTML = STATE.people.map(p=>`
+    <div class="pcard">
+      <h3>${esc(p.name)}</h3>
+      ${p.tribe? `<span class="tribe">${esc(p.tribe)}</span>`:''}
+      ${p.sayings? `<div class="blk"><b>أقوال قيلت فيه/ها</b>${nl2br(p.sayings)}</div>`:''}
+      ${p.deeds? `<div class="blk"><b>مواقف وأفعال</b>${nl2br(p.deeds)}</div>`:''}
+      <div class="foot"><button class="btn danger" data-del-person="${p.id}">حذف</button></div>
+    </div>`).join('');
+  root.querySelectorAll('[data-del-person]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      STATE.people = STATE.people.filter(p=>p.id!==btn.dataset.delPerson);
+      persist(); renderPeople();
+    });
+  });
+}
+document.getElementById('p-add').addEventListener('click', ()=>{
+  const name = document.getElementById('p-name').value.trim();
+  if(!name){ toast('أدخل الاسم'); return; }
+  STATE.people.push({
+    id:uid(), name,
+    tribe: document.getElementById('p-tribe').value.trim(),
+    sayings: document.getElementById('p-sayings').value.trim(),
+    deeds: document.getElementById('p-deeds').value.trim(),
+  });
+  ['p-name','p-tribe','p-sayings','p-deeds'].forEach(id=>document.getElementById(id).value='');
+  persist(); renderPeople();
+});
+
+/* ---------------- verses ---------------- */
+function renderVerses(){
+  const root = document.getElementById('verses-list');
+  if(STATE.verses.length===0){ root.innerHTML = '<div class="empty-note">لم تُضف آيات بعد</div>'; return; }
+  root.innerHTML = STATE.verses.map(v=>`
+    <div class="vcard">
+      <div class="ayah">﴿ ${esc(v.text)} ﴾</div>
+      <div class="vmeta">
+        ${v.ref? `<span class="tag gold">${esc(v.ref)}</span>`:''}
+        ${v.year? `<span class="tag">${esc(v.year)}</span>`:''}
+        ${v.related? `<span class="tag">${esc(v.related)}</span>`:''}
+      </div>
+      ${v.note? `<div class="vnote">${nl2br(v.note)}</div>`:''}
+      <div class="vfoot"><button class="btn danger" data-del-verse="${v.id}">حذف</button></div>
+    </div>`).join('');
+  root.querySelectorAll('[data-del-verse]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      STATE.verses = STATE.verses.filter(v=>v.id!==btn.dataset.delVerse);
+      persist(); renderVerses();
+    });
+  });
+}
+document.getElementById('v-add').addEventListener('click', ()=>{
+  const text = document.getElementById('v-text').value.trim();
+  if(!text){ toast('أدخل نص الآية'); return; }
+  STATE.verses.push({
+    id:uid(), text,
+    ref: document.getElementById('v-ref').value.trim(),
+    year: document.getElementById('v-year').value.trim(),
+    related: document.getElementById('v-related').value.trim(),
+    note: document.getElementById('v-note').value.trim(),
+  });
+  ['v-text','v-ref','v-year','v-related','v-note'].forEach(id=>document.getElementById(id).value='');
+  persist(); renderVerses();
+});
+
+/* ---------------- reflections ---------------- */
+function renderReflect(){
+  const root = document.getElementById('reflect-list');
+  if(STATE.reflections.length===0){ root.innerHTML = '<div class="empty-note">لا تأملات مسجّلة بعد</div>'; return; }
+  root.innerHTML = STATE.reflections.slice().reverse().map(r=>`
+    <div class="rcard ${r.cat==='عقائدي'?'aqidah':''}">
+      <h3>${esc(r.title)}</h3>
+      <div class="rmeta"><span>${esc(r.cat)}</span><span>${esc(r.date)}</span></div>
+      <p>${nl2br(r.content)}</p>
+      <div class="vfoot"><button class="btn danger" data-del-reflect="${r.id}">حذف</button></div>
+    </div>`).join('');
+  root.querySelectorAll('[data-del-reflect]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      STATE.reflections = STATE.reflections.filter(r=>r.id!==btn.dataset.delReflect);
+      persist(); renderReflect();
+    });
+  });
+}
+document.getElementById('r-add').addEventListener('click', ()=>{
+  const title = document.getElementById('r-title').value.trim();
+  const content = document.getElementById('r-content').value.trim();
+  if(!title || !content){ toast('أدخل العنوان والاستنتاج'); return; }
+  STATE.reflections.push({
+    id:uid(), title, content,
+    cat: document.getElementById('r-cat').value,
+    date: new Date().toLocaleDateString('ar-SA'),
+  });
+  ['r-title','r-content'].forEach(id=>document.getElementById(id).value='');
+  persist(); renderReflect();
+});
+
+renderTimeline(); renderPeople(); renderVerses(); renderReflect();
+</script>
+<script data-state-injector></script>
