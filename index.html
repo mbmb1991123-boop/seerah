@@ -188,6 +188,10 @@ textarea,input,select{font-family:inherit}
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;600;700&display=swap">
 
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+
 <div class="shell">
   <nav class="nav">
     <div class="brand">سِيرة</div>
@@ -196,7 +200,7 @@ textarea,input,select{font-family:inherit}
     <button class="navbtn" data-page="people"><span class="ic">👥</span> الشخصيات</button>
     <button class="navbtn" data-page="verses"><span class="ic">📖</span> الآيات</button>
     <button class="navbtn" data-page="reflect"><span class="ic">🕊️</span> تأملاتي</button>
-    <div class="nav-foot">حفظك محفوظ تلقائيًا<br>عند كل إضافة</div>
+    <div class="nav-foot" id="sync-badge">حفظك محفوظ تلقائيًا<br>عند كل إضافة</div>
   </nav>
 
   <main class="main">
@@ -316,7 +320,48 @@ function uid(){return 'x'+Math.random().toString(36).slice(2,9)}
 function esc(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
 function nl2br(s){return esc(s).replace(/\n/g,'<br>')}
 
-/* ---------------- persistence ---------------- */
+/* ---------------- persistence: Firebase (Firestore + Anonymous Auth) ---------------- */
+const firebaseConfig = {
+  apiKey: "AIzaSyAbtfcAThyyYdom76fG4JssVEccHzv1w2s",
+  authDomain: "seerah-84f31.firebaseapp.com",
+  projectId: "seerah-84f31",
+  storageBucket: "seerah-84f31.firebasestorage.app",
+  messagingSenderId: "10028792266",
+  appId: "1:10028792266:web:4137d5bde85a8092053733"
+};
+let fbDb = null, fbUser = null, cloudReady = false;
+function setSyncBadge(text){
+  const el = document.getElementById('sync-badge');
+  if(el) el.textContent = text;
+}
+try{
+  firebase.initializeApp(firebaseConfig);
+  fbDb = firebase.firestore();
+  setSyncBadge('يتصل بالخادم…');
+  firebase.auth().onAuthStateChanged(async (user)=>{
+    if(!user) return;
+    fbUser = user;
+    try{
+      const ref = fbDb.collection('seerah_users').doc(user.uid);
+      const snap = await ref.get();
+      if(snap.exists && snap.data() && snap.data().payload){
+        STATE = JSON.parse(snap.data().payload);
+      } else {
+        await ref.set({payload: JSON.stringify(STATE), updatedAt: new Date().toISOString()});
+      }
+      cloudReady = true;
+      setSyncBadge('متصل — بياناتك محفوظة في السحابة');
+      renderTimeline(); renderPeople(); renderVerses(); renderReflect();
+    }catch(e){
+      setSyncBadge('تعذّر الاتصال بقاعدة البيانات');
+    }
+  });
+  firebase.auth().signInAnonymously().catch(()=> setSyncBadge('تعذّر تسجيل الدخول'));
+}catch(e){
+  setSyncBadge('Firebase غير متاح');
+}
+
+/* ---------------- persistence: Claude artifact (kept for the hosted preview) ---------------- */
 let artifactApi = null;
 async function initArtifact(){
   try{
@@ -339,11 +384,16 @@ let saveTimer = null;
 function persist(){
   clearTimeout(saveTimer);
   saveTimer = setTimeout(async ()=>{
+    if(cloudReady && fbDb && fbUser){
+      try{
+        await fbDb.collection('seerah_users').doc(fbUser.uid).set({payload: JSON.stringify(STATE), updatedAt: new Date().toISOString()});
+      }catch(e){ setSyncBadge('تعذّر الحفظ في السحابة'); }
+    }
     if(artifactApi && artifactApi.publish){
       try{ await artifactApi.publish(buildFullHtml()); }catch(e){ /* conflict or not_granted: ignore */ }
     }
     toast('تم الحفظ');
-  }, 150);
+  }, 400);
 }
 function toast(msg){
   const t = document.getElementById('toast');
