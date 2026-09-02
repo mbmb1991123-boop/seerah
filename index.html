@@ -134,6 +134,7 @@ textarea,input,select{font-family:inherit}
 .entry p{margin:0;color:var(--text-soft);line-height:1.7;font-size:.9rem;white-space:pre-wrap}
 .entry .row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
 .icon-btn{background:none;border:none;color:var(--text-soft);font-size:.85rem;padding:2px 4px;border-radius:6px}
+.entry-actions{display:flex;gap:4px;flex:0 0 auto}
 .icon-btn:hover{color:var(--danger)}
 .empty-note{color:var(--text-soft);font-size:.85rem;padding:10px 4px;font-style:italic}
 .year-picker{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
@@ -511,29 +512,103 @@ function renderTimeline(){
       persist(); renderTimeline();
     });
   });
+  root.querySelectorAll('[data-edit-entry]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      editingEntryId = btn.dataset.editEntry;
+      renderTimeline();
+    });
+  });
+  root.querySelectorAll('[data-cancel-entry]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      editingEntryId = null;
+      renderTimeline();
+    });
+  });
+  root.querySelectorAll('[data-save-entry]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const id = btn.dataset.saveEntry;
+      const wrap = btn.closest('.entry-edit');
+      const title = wrap.querySelector('.edit-entry-title').value.trim();
+      const desc = wrap.querySelector('.edit-entry-desc').value.trim();
+      if(!title){ toast('أدخل عنوان الحدث'); return; }
+      const item = STATE.entries.find(e=>e.id===id);
+      if(item){ item.title = title; item.desc = desc; }
+      editingEntryId = null;
+      persist(); renderTimeline();
+    });
+  });
 }
+let editingEntryId = null;
 function entryHtml(it){
+  if(editingEntryId === it.id){
+    return `<div class="entry entry-edit">
+      <div class="field full"><label>عنوان الحدث</label><input class="edit-entry-title" value="${esc(it.title)}"></div>
+      <div class="field full"><label>الوصف</label><textarea class="edit-entry-desc">${esc(it.desc)}</textarea></div>
+      <div class="actions">
+        <button class="btn" data-save-entry="${it.id}">حفظ</button>
+        <button class="btn ghost" data-cancel-entry="${it.id}">إلغاء</button>
+      </div>
+    </div>`;
+  }
   return `<div class="entry"><div class="row">
     <div><h4>${esc(it.title)}</h4><p>${nl2br(it.desc)}</p></div>
-    <button class="icon-btn" data-del-entry="${it.id}" title="حذف">✕</button>
+    <div class="entry-actions">
+      <button class="icon-btn" data-edit-entry="${it.id}" title="تعديل">✎</button>
+      <button class="icon-btn" data-del-entry="${it.id}" title="حذف">✕</button>
+    </div>
   </div></div>`;
 }
 
 /* ---------------- people ---------------- */
-function renderPeople(){
-  const root = document.getElementById('people-grid');
-  if(STATE.people.length===0){ root.innerHTML = '<div class="empty-note">لم تُضف شخصيات بعد</div>'; return; }
-  root.innerHTML = STATE.people.map(p=>`
-    <div class="pcard">
+let editingPersonId = null;
+function personCardHtml(p){
+  if(editingPersonId === p.id){
+    return `<div class="pcard pcard-edit">
+      <div class="field"><label>الاسم</label><input class="edit-p-name" value="${esc(p.name)}"></div>
+      <div class="field"><label>القبيلة</label><input class="edit-p-tribe" value="${esc(p.tribe)}"></div>
+      <div class="field full"><label>أقوال قيلت فيه/ها</label><textarea class="edit-p-sayings">${esc(p.sayings)}</textarea></div>
+      <div class="field full"><label>مواقف وأفعال</label><textarea class="edit-p-deeds">${esc(p.deeds)}</textarea></div>
+      <div class="foot"><button class="btn" data-save-person="${p.id}">حفظ</button><button class="btn ghost" data-cancel-person="${p.id}">إلغاء</button></div>
+    </div>`;
+  }
+  return `<div class="pcard">
       <h3>${esc(p.name)}</h3>
       ${p.tribe? `<span class="tribe">${esc(p.tribe)}</span>`:''}
       ${p.sayings? `<div class="blk"><b>أقوال قيلت فيه/ها</b>${nl2br(p.sayings)}</div>`:''}
       ${p.deeds? `<div class="blk"><b>مواقف وأفعال</b>${nl2br(p.deeds)}</div>`:''}
-      <div class="foot"><button class="btn danger" data-del-person="${p.id}">حذف</button></div>
-    </div>`).join('');
+      <div class="foot"><button class="btn ghost" data-edit-person="${p.id}">تعديل</button><button class="btn danger" data-del-person="${p.id}">حذف</button></div>
+    </div>`;
+}
+function renderPeople(){
+  const root = document.getElementById('people-grid');
+  if(STATE.people.length===0){ root.innerHTML = '<div class="empty-note">لم تُضف شخصيات بعد</div>'; return; }
+  root.innerHTML = STATE.people.map(personCardHtml).join('');
   root.querySelectorAll('[data-del-person]').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       STATE.people = STATE.people.filter(p=>p.id!==btn.dataset.delPerson);
+      persist(); renderPeople();
+    });
+  });
+  root.querySelectorAll('[data-edit-person]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{ editingPersonId = btn.dataset.editPerson; renderPeople(); });
+  });
+  root.querySelectorAll('[data-cancel-person]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{ editingPersonId = null; renderPeople(); });
+  });
+  root.querySelectorAll('[data-save-person]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const id = btn.dataset.savePerson;
+      const wrap = btn.closest('.pcard-edit');
+      const name = wrap.querySelector('.edit-p-name').value.trim();
+      if(!name){ toast('أدخل الاسم'); return; }
+      const item = STATE.people.find(p=>p.id===id);
+      if(item){
+        item.name = name;
+        item.tribe = wrap.querySelector('.edit-p-tribe').value.trim();
+        item.sayings = wrap.querySelector('.edit-p-sayings').value.trim();
+        item.deeds = wrap.querySelector('.edit-p-deeds').value.trim();
+      }
+      editingPersonId = null;
       persist(); renderPeople();
     });
   });
@@ -552,11 +627,19 @@ document.getElementById('p-add').addEventListener('click', ()=>{
 });
 
 /* ---------------- verses ---------------- */
-function renderVerses(){
-  const root = document.getElementById('verses-list');
-  if(STATE.verses.length===0){ root.innerHTML = '<div class="empty-note">لم تُضف آيات بعد</div>'; return; }
-  root.innerHTML = STATE.verses.map(v=>`
-    <div class="vcard">
+let editingVerseId = null;
+function verseCardHtml(v){
+  if(editingVerseId === v.id){
+    return `<div class="vcard vcard-edit">
+      <div class="field full"><label>نص الآية</label><textarea class="edit-v-text">${esc(v.text)}</textarea></div>
+      <div class="field"><label>السورة والآية</label><input class="edit-v-ref" value="${esc(v.ref)}"></div>
+      <div class="field"><label>سنة النزول</label><input class="edit-v-year" value="${esc(v.year)}"></div>
+      <div class="field full"><label>الحدث أو الشخصية المرتبطة</label><input class="edit-v-related" value="${esc(v.related)}"></div>
+      <div class="field full"><label>ملاحظة</label><textarea class="edit-v-note">${esc(v.note)}</textarea></div>
+      <div class="vfoot"><button class="btn" data-save-verse="${v.id}">حفظ</button><button class="btn ghost" data-cancel-verse="${v.id}">إلغاء</button></div>
+    </div>`;
+  }
+  return `<div class="vcard">
       <div class="ayah">﴿ ${esc(v.text)} ﴾</div>
       <div class="vmeta">
         ${v.ref? `<span class="tag gold">${esc(v.ref)}</span>`:''}
@@ -564,11 +647,40 @@ function renderVerses(){
         ${v.related? `<span class="tag">${esc(v.related)}</span>`:''}
       </div>
       ${v.note? `<div class="vnote">${nl2br(v.note)}</div>`:''}
-      <div class="vfoot"><button class="btn danger" data-del-verse="${v.id}">حذف</button></div>
-    </div>`).join('');
+      <div class="vfoot"><button class="btn ghost" data-edit-verse="${v.id}">تعديل</button><button class="btn danger" data-del-verse="${v.id}">حذف</button></div>
+    </div>`;
+}
+function renderVerses(){
+  const root = document.getElementById('verses-list');
+  if(STATE.verses.length===0){ root.innerHTML = '<div class="empty-note">لم تُضف آيات بعد</div>'; return; }
+  root.innerHTML = STATE.verses.map(verseCardHtml).join('');
   root.querySelectorAll('[data-del-verse]').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       STATE.verses = STATE.verses.filter(v=>v.id!==btn.dataset.delVerse);
+      persist(); renderVerses();
+    });
+  });
+  root.querySelectorAll('[data-edit-verse]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{ editingVerseId = btn.dataset.editVerse; renderVerses(); });
+  });
+  root.querySelectorAll('[data-cancel-verse]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{ editingVerseId = null; renderVerses(); });
+  });
+  root.querySelectorAll('[data-save-verse]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const id = btn.dataset.saveVerse;
+      const wrap = btn.closest('.vcard-edit');
+      const text = wrap.querySelector('.edit-v-text').value.trim();
+      if(!text){ toast('أدخل نص الآية'); return; }
+      const item = STATE.verses.find(v=>v.id===id);
+      if(item){
+        item.text = text;
+        item.ref = wrap.querySelector('.edit-v-ref').value.trim();
+        item.year = wrap.querySelector('.edit-v-year').value.trim();
+        item.related = wrap.querySelector('.edit-v-related').value.trim();
+        item.note = wrap.querySelector('.edit-v-note').value.trim();
+      }
+      editingVerseId = null;
       persist(); renderVerses();
     });
   });
@@ -588,19 +700,55 @@ document.getElementById('v-add').addEventListener('click', ()=>{
 });
 
 /* ---------------- reflections ---------------- */
-function renderReflect(){
-  const root = document.getElementById('reflect-list');
-  if(STATE.reflections.length===0){ root.innerHTML = '<div class="empty-note">لا تأملات مسجّلة بعد</div>'; return; }
-  root.innerHTML = STATE.reflections.slice().reverse().map(r=>`
-    <div class="rcard ${r.cat==='عقائدي'?'aqidah':''}">
+let editingReflectId = null;
+function reflectCardHtml(r){
+  if(editingReflectId === r.id){
+    return `<div class="rcard rcard-edit ${r.cat==='عقائدي'?'aqidah':''}">
+      <div class="field"><label>العنوان</label><input class="edit-r-title" value="${esc(r.title)}"></div>
+      <div class="field"><label>التصنيف</label>
+        <select class="edit-r-cat"><option value="اخلاقي" ${r.cat==='اخلاقي'?'selected':''}>أخلاقي</option><option value="عقائدي" ${r.cat==='عقائدي'?'selected':''}>عقائدي</option></select>
+      </div>
+      <div class="field full"><label>استنتاجك</label><textarea class="edit-r-content" style="min-height:110px">${esc(r.content)}</textarea></div>
+      <div class="vfoot"><button class="btn" data-save-reflect="${r.id}">حفظ</button><button class="btn ghost" data-cancel-reflect="${r.id}">إلغاء</button></div>
+    </div>`;
+  }
+  return `<div class="rcard ${r.cat==='عقائدي'?'aqidah':''}">
       <h3>${esc(r.title)}</h3>
       <div class="rmeta"><span>${esc(r.cat)}</span><span>${esc(r.date)}</span></div>
       <p>${nl2br(r.content)}</p>
-      <div class="vfoot"><button class="btn danger" data-del-reflect="${r.id}">حذف</button></div>
-    </div>`).join('');
+      <div class="vfoot"><button class="btn ghost" data-edit-reflect="${r.id}">تعديل</button><button class="btn danger" data-del-reflect="${r.id}">حذف</button></div>
+    </div>`;
+}
+function renderReflect(){
+  const root = document.getElementById('reflect-list');
+  if(STATE.reflections.length===0){ root.innerHTML = '<div class="empty-note">لا تأملات مسجّلة بعد</div>'; return; }
+  root.innerHTML = STATE.reflections.slice().reverse().map(reflectCardHtml).join('');
   root.querySelectorAll('[data-del-reflect]').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       STATE.reflections = STATE.reflections.filter(r=>r.id!==btn.dataset.delReflect);
+      persist(); renderReflect();
+    });
+  });
+  root.querySelectorAll('[data-edit-reflect]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{ editingReflectId = btn.dataset.editReflect; renderReflect(); });
+  });
+  root.querySelectorAll('[data-cancel-reflect]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{ editingReflectId = null; renderReflect(); });
+  });
+  root.querySelectorAll('[data-save-reflect]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const id = btn.dataset.saveReflect;
+      const wrap = btn.closest('.rcard-edit');
+      const title = wrap.querySelector('.edit-r-title').value.trim();
+      const content = wrap.querySelector('.edit-r-content').value.trim();
+      if(!title || !content){ toast('أدخل العنوان والاستنتاج'); return; }
+      const item = STATE.reflections.find(r=>r.id===id);
+      if(item){
+        item.title = title;
+        item.content = content;
+        item.cat = wrap.querySelector('.edit-r-cat').value;
+      }
+      editingReflectId = null;
       persist(); renderReflect();
     });
   });
